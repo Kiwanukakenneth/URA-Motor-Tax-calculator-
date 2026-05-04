@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uganda Car Import Tax Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Css/style.css">
+</head>
+<body>
+<div class="container">
+  <!-- ==============================================
+       HEADER SECTION
+       Displays the title, subtitle, and database stats
+  ============================================== -->
+  <div class="header">
+    <div class="flag-badge"><span class="flag">🇺🇬</span>Uganda Revenue Authority — URA Import Car Tax Estimator</div>
+    <h1>Uganda Revenue Authority Car Import<br><span>Tax Calculation Tool</span></h1>
+    <p class="subtitle">Powered by the URA Motor Vehicle Value Guide database</p>
+    <div class="db-stats" id="dbStats"></div>
+  </div>
+
+  <!-- ==============================================
+       MAIN CALCULATOR GRID
+       Contains two cards: Vehicle Details and Costs
+  ============================================== -->
+  <div class="calculator-grid">
+    <div class="card">
+      <div class="card-title">Vehicle Details</div>
+      <div class="field"><label>Brand / Manufacturer </label><select id="make" onchange="onMakeChange()">
+          <option value="">Select make...</option>
+          <optgroup label="⚡ Quick Select">
+            <option value="Toyota">Toyota</option>
+            <option value="Nissan">Nissan</option>
+            <option value="Subaru">Subaru</option>
+            <option value="Mitsubishi">Mitsubishi</option>
+            <option value="Mercedes">Mercedes</option>
+            <option value="Honda">Honda</option>
+            <option value="Land">Land Rover</option>
+            <option value="Isuzu">Isuzu</option>
+            <option value="Mazda">Mazda</option>
+            <option value="BMW">BMW</option>
+            <option value="Volkswagen">Volkswagen</option>
+            <option value="Suzuki">Suzuki</option>
+          </optgroup>
+          <optgroup id="all-makes-group" label="── All Makes (A–Z)"></optgroup>
+        </select></div>
+      <div class="field"><label>Model</label><select id="model" onchange="onModelChange()" disabled><option value="">Select model...</option></select></div>
+      <div class="field" id="chassisField" style="display:none">
+        <label>Model Code <span id="chassisHint" style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0"></span></label>
+        <select id="chassis" onchange="onChassisChange()" disabled><option value="">Select chassis...</option></select>
+      </div>
+      <div class="field" id="ccField" style="display:none">
+        <label>Engine Size <span id="ccHint" style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0"></span></label>
+        <select id="cc" onchange="onCcChange()" disabled><option value="">Select engine size...</option></select>
+      </div>
+      <div class="field"><label>Year of Manufacture</label><select id="year" onchange="onYearChange()" disabled><option value="">Select year...</option></select></div>
+      <div class="ura-badge" id="uraBadge"><span>🏛 URA Value:</span><b id="uraCifDisplay">—</b><span style="font-size:11px;color:var(--muted)">(used for all taxes)</span></div>
+      <div class="ura-not-found" id="uraNotFound">⚠️ Not in URA database. Taxes calculated on your purchase price.</div>
+      <div id="chassisBadge" style="display:none;align-items:center;gap:8px;background:rgba(200,255,0,0.06);border:1px solid rgba(200,255,0,0.25);border-radius:10px;padding:10px 14px;margin-top:10px;font-family:'DM Mono',monospace;font-size:13px;color:#c8ff00"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Cost & Shipping</div>
+      <div class="field"><label>Your Purchase Price (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="carPrice" placeholder="e.g. 8000" min="0"></div></div>
+      <div class="field"><label>Shipping Cost (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="shipping" min="0"></div></div>
+      <div class="field"><label>Insurance (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="insurance" min="0"></div></div>
+      <div class="field"><label>Clearing Agent Fee (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="agentFee" min="0"></div></div>
+      <button class="calc-btn" onclick="calculate()">⚡ CALCULATE TAXES</button>
+    </div>
+  </div>
+  <!-- ==============================================
+       RESULTS SECTION
+       Displays the calculated taxes, levies, and totals
+  ============================================== -->
+  <div class="age-warning" id="ageWarning">⚠️ This vehicle may be too old for Uganda import. Uganda requires cars manufactured 2011 or later. Confirm with URA before purchasing.</div>
+  <div class="results-card" id="results">
+    <div class="card-title">Tax Breakdown</div>
+    <div class="result-row"><span class="result-label">URA CIF Valuation</span><span class="result-value" id="r-cif">—</span></div>
+    <div class="result-row"><span class="result-label">Import Duty (25%)</span><span class="result-value positive" id="r-duty">—</span></div>
+    <div class="result-row"><span class="result-label">VAT (18% of CIF + Duty)</span><span class="result-value positive" id="r-vat">—</span></div>
+    <div class="result-row"><span class="result-label">Withholding Tax (6% of CIF)</span><span class="result-value positive" id="r-wht">—</span></div>
+    <div class="result-row"><span class="result-label">Infrastructure Levy (1.5% of CIF)</span><span class="result-value positive" id="r-infra">—</span></div>
+    <div class="result-row" id="age-levy-row" style="display:none"><span class="result-label">Environmental Levy (50% of CIF — vehicles 10–14 years)</span><span class="result-value positive" id="r-age">—</span></div>
+    <div class="result-row"><span class="result-label">Fixed Gov't Fees (Form + Stamp + Excise + Registration)</span><span class="result-value positive" id="r-fixed">—</span></div>
+    <div class="result-row"><span class="result-label">Clearing Agent Fee</span><span class="result-value positive" id="r-agent">—</span></div>
+    <div class="total-section">
+      <div class="total-grid">
+        <div class="total-item"><label>Car Price</label><div class="amount ship" id="t-car">—</div></div>
+        <div class="total-item"><label>Total Taxes & Fees</label><div class="amount tax" id="t-tax">—</div></div>
+        <div class="total-item"><label>Total Landed Cost</label><div class="amount big" id="t-total">—</div></div>
+      </div>
+    </div>
+    <div class="ura-override-notice" id="uraOverrideNotice">ℹ️ Using URA's official CIF valuation for tax calculations as per URA database.</div>
+    <div class="info-row" id="info-pills"></div>
+    <div class="warning-box">⚠️ These are <strong>estimates only</strong>. Always verify with a licensed clearing agent or URA directly before purchasing.</div>
+
+    <button id="methBtn" onclick="toggleMethodology()" style="width:100%;margin-top:16px;background:transparent;border:1px solid var(--border);border-radius:12px;padding:14px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all 0.2s" onmouseenter="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseleave="if(!document.getElementById('methodologyPanel').classList.contains('open')){this.style.borderColor='var(--border)';this.style.color='var(--muted)'}">
+      <span>📐 View Methodology & Tax Breakdown</span>
+      <span id="methArrow" style="font-size:16px;transition:transform 0.25s">▾</span>
+    </button>
+    <div id="methodologyPanel" style="display:none;margin-top:2px;border:1px solid var(--border);border-radius:12px;overflow:hidden">
+      <div style="background:var(--surface2);padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:600;letter-spacing:3px;color:var(--accent);font-family:'DM Mono',monospace;margin-bottom:4px">HOW URA CALCULATES YOUR TAXES</div>
+        <p style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);line-height:1.7">All taxes are levied under the <strong style="color:var(--text)">East African Community Common External Tariff (EAC-CET)</strong> and collected by the <strong style="color:var(--text)">Uganda Revenue Authority (URA)</strong>. Tax rates verified against real URA output data.</p>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:12px" id="methSteps"></div>
+      <div style="background:rgba(200,255,0,0.03);border-top:1px solid var(--border);padding:16px 20px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:var(--accent);font-family:'DM Mono',monospace;margin-bottom:12px">CALCULATION CHAIN</div>
+        <div id="methChain" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);line-height:2.2"></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:16px 20px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:var(--accent);font-family:'DM Mono',monospace;margin-bottom:12px">LEGAL BASIS & RATES</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:4px">IMPORT DUTY</div><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text)">EAC Common External Tariff · HS Code 8703.xx · Rate: 25%</div></div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:4px">VAT</div><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text)">VAT Act · Applied on CIF · Rate: 18%</div></div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:4px">WITHHOLDING TAX</div><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text)">Income Tax Act · Applied on CIF · Rate: 6%</div></div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:4px">INFRASTRUCTURE LEVY</div><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text)">Finance Act 2014 · Road fund · Applied on CIF · Rate: 1.5%</div></div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:4px">ENVIRONMENTAL LEVY</div><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text)">Finance Act · 0–9 years: 0% · 10–14 years: 50% of CIF</div></div>
+          <div style="background:var(--surface2);border-radius:8px;padding:10px 14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:4px">FIXED GOV'T FEES (UGX)</div><div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--text)">Form 18k · Stamp 35k · Excise 200k · Registration 1.5M</div></div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:16px 20px;background:rgba(0,212,255,0.03)">
+        <div style="font-size:10px;font-weight:600;letter-spacing:2px;color:var(--accent2);font-family:'DM Mono',monospace;margin-bottom:10px">WHAT IS CIF?</div>
+        <p style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);line-height:1.8"><strong style="color:var(--accent2)">CIF = Cost + Insurance + Freight.</strong> URA taxes your vehicle on its CIF value. If your purchase price is lower than URA's Motor Vehicle Value Guide, URA will use <em>their</em> value — not yours.</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- ==============================================
+       RELIABILITY SECTION
+       Shows Uganda-specific reliability data
+  ============================================== -->
+  <div style="margin-top:40px">
+    <div class="card" style="animation-delay:0.2s">
+      <div class="card-title">🔧 Vehicle Reliability Check</div>
+      <p style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);margin-bottom:20px">Uganda-specific reliability ratings — based on parts availability, local mechanic knowledge and road conditions</p>
+
+      <!-- Search -->
+      <div class="field">
+        <label>Search by Brand</label>
+        <input type="text" id="reliSearch" placeholder="e.g. Toyota, BMW, Honda..." oninput="filterReliability()" style="margin-bottom:12px">
+      </div>
+
+      <!-- Filter buttons -->
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px" id="filterBtns">
+        <button onclick="setFilter('all')" class="filter-btn active" data-filter="all">All Brands</button>
+        <button onclick="setFilter('Excellent')" class="filter-btn" data-filter="Excellent">💎 Excellent</button>
+        <button onclick="setFilter('Good')" class="filter-btn" data-filter="Good">🛡️ Good</button>
+        <button onclick="setFilter('Average')" class="filter-btn" data-filter="Average">⚖️ Balanced</button>
+        <button onclick="setFilter('Caution')" class="filter-btn" data-filter="Caution">🛠️ Needs Care</button>
+        <button onclick="setFilter('Avoid')" class="filter-btn" data-filter="Avoid">🔩 Expert Care</button>
+      </div>
+
+      <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px">Uganda-specific ratings · tap any row for details · click 🔩 engines for engine breakdown</p>
+      <!-- Grid -->
+      <div id="reliTable"></div>
+    </div>
+  </div>
+
+  <div class="footer">Powered by URA Motor Vehicle Value Guide · For informational purposes only<br>Always verify with Uganda Revenue Authority (URA) or a licensed clearing agent</div>
+</div>
+
+<script src="Js/script.js"></script>
+</body>
+</html>
