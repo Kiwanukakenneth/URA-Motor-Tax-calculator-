@@ -1,0 +1,18 @@
+git status
+# Internal Data & Scripts
+csvjson.json
+clean_db.py
+fix_everything.py
+import_ura_data.py
+recover_db.py
+restore_db.py
+test_parse.py
+
+# System Files
+.DS_Store
+node_modules/
+.vercel/
+.netlify/
+
+# Build Assets (optional)
+# Js/script.min.js
