@@ -3,9 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uganda Car Import Tax Calculator</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="Css/style.css">
+
+<!-- Primary Meta Tags -->
+<title>URA Car Import Tax Calculator Uganda (2026) | Check CIF & Duty</title>
+<meta name="title" content="URA Car Import Tax Calculator Uganda (2026) | Check CIF & Duty">
+<meta name="description" content="Easily calculate Uganda Revenue Authority (URA) import taxes, CIF values, environmental levies, and duties for any vehicle imported to Uganda.">
+<meta name="keywords" content="Uganda car import tax calculator, URA car tax calculator, import duty on cars in Uganda, URA motor vehicle value guide, CIF value calculator Uganda">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="URA Car Import Tax Calculator Uganda (2026)">
+<meta property="og:description" content="Calculate your exact URA import duties, CIF valuation, and environmental levies instantly.">
+<meta property="og:image" content="https://placehold.co/1200x630/1e1e1e/c8ff00?text=Uganda+Car+Tax+Calculator">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="URA Car Import Tax Calculator Uganda (2026)">
+<meta property="twitter:description" content="Calculate your exact URA import duties, CIF valuation, and environmental levies instantly.">
+<meta property="twitter:image" content="https://placehold.co/1200x630/1e1e1e/c8ff00?text=Uganda+Car+Tax+Calculator">
+
+<!-- Preload Local Font to prevent FOUT (Flash of Unstyled Text) -->
+<link rel="preload" href="fonts/Syne/Syne-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="Css/style.css">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "URA Car Import Tax Calculator Uganda",
+  "description": "Calculate Uganda Revenue Authority (URA) import taxes, CIF values, environmental levies, and duties for vehicles imported to Uganda.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<!-- JSON-LD Structured Data FAQ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "How is import duty calculated on cars in Uganda?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Import duty is calculated at 25% of the vehicle's CIF (Cost, Insurance, and Freight) value as per the East African Community Common External Tariff (EAC-CET)."
+    }
+  }, {
+    "@type": "Question",
+    "name": "What is the environmental levy on imported cars in Uganda?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Vehicles aged 0-9 years have 0% environmental levy. Vehicles aged 10-14 years are charged an environmental levy of 50% of their CIF value."
+    }
+  }, {
+    "@type": "Question",
+    "name": "How does URA determine the CIF value?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "URA uses its official Motor Vehicle Value Guide database to determine the CIF value. If your purchase price is lower than URA's guided value, taxes are levied based on URA's higher valuation."
+    }
+  }]
+}
+</script>
 </head>
 <body>
 <div class="container">
@@ -15,7 +80,7 @@
   ============================================== -->
   <div class="header">
     <div class="flag-badge"><span class="flag">🇺🇬</span>Uganda Revenue Authority — URA Import Car Tax Estimator</div>
-    <h1>Uganda Revenue Authority Car Import<br><span>Tax Calculation Tool</span></h1>
+    <h1>Uganda Revenue Authority Car Import<br><span>Tax Computation</span></h1>
     <p class="subtitle">Powered by the URA Motor Vehicle Value Guide database</p>
     <div class="db-stats" id="dbStats"></div>
   </div>
@@ -26,21 +91,37 @@
   ============================================== -->
   <div class="calculator-grid">
     <div class="card">
-      <div class="card-title">Vehicle Details</div>
+      <h2 class="card-title">Vehicle Details</h2>
+      
+      <!-- Quick Search Feature -->
+      <div class="field" style="position:relative; z-index: 10;">
+        <label>Quick Search <span style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0">(Search by Model or Chassis Code)</span></label>
+        <input type="text" id="quickSearchInput" placeholder="e.g. NZE141 or Hilux..." oninput="handleQuickSearch()" style="width:100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.2); color: white; outline: none; transition: border-color 0.2s;">
+        <div id="quickSearchResults" class="quick-search-results"></div>
+      </div>
+      
+      <div style="display:flex; align-items:center; gap:10px; margin: 15px 0;">
+         <hr style="flex:1; border:none; border-top:1px solid var(--border);">
+         <span style="font-size:11px; color:var(--muted); font-family:'DM Mono',monospace;">OR SELECT MANUALLY</span>
+         <hr style="flex:1; border:none; border-top:1px solid var(--border);">
+      </div>
+
       <div class="field"><label>Brand / Manufacturer </label><select id="make" onchange="onMakeChange()">
           <option value="">Select make...</option>
           <optgroup label="⚡ Quick Select">
             <option value="Toyota">Toyota</option>
-            <option value="Nissan">Nissan</option>
-            <option value="Subaru">Subaru</option>
-            <option value="Mitsubishi">Mitsubishi</option>
             <option value="Mercedes">Mercedes</option>
-            <option value="Honda">Honda</option>
-            <option value="Land">Land Rover</option>
-            <option value="Isuzu">Isuzu</option>
+            <option value="Subaru">Subaru</option>
             <option value="Mazda">Mazda</option>
+            <option value="Ford">Ford</option>
             <option value="BMW">BMW</option>
             <option value="Volkswagen">Volkswagen</option>
+            <option value="Audi">Audi</option>
+            <option value="Honda">Honda</option>
+            <option value="Land">Land Rover</option>
+            <option value="Nissan">Nissan</option>
+            <option value="Mitsubishi">Mitsubishi</option>
+            <option value="Isuzu">Isuzu</option>
             <option value="Suzuki">Suzuki</option>
           </optgroup>
           <optgroup id="all-makes-group" label="── All Makes (A–Z)"></optgroup>
@@ -60,7 +141,7 @@
       <div id="chassisBadge" style="display:none;align-items:center;gap:8px;background:rgba(200,255,0,0.06);border:1px solid rgba(200,255,0,0.25);border-radius:10px;padding:10px 14px;margin-top:10px;font-family:'DM Mono',monospace;font-size:13px;color:#c8ff00"></div>
     </div>
     <div class="card">
-      <div class="card-title">Cost & Shipping</div>
+      <h2 class="card-title">Cost & Shipping</h2>
       <div class="field"><label>Your Purchase Price (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="carPrice" placeholder="e.g. 8000" min="0"></div></div>
       <div class="field"><label>Shipping Cost (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="shipping" min="0"></div></div>
       <div class="field"><label>Insurance (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="insurance" min="0"></div></div>
@@ -74,7 +155,7 @@
   ============================================== -->
   <div class="age-warning" id="ageWarning">⚠️ This vehicle may be too old for Uganda import. Uganda requires cars manufactured 2011 or later. Confirm with URA before purchasing.</div>
   <div class="results-card" id="results">
-    <div class="card-title">Tax Breakdown</div>
+    <h2 class="card-title">Tax Breakdown</h2>
     <div class="result-row"><span class="result-label">URA CIF Valuation</span><span class="result-value" id="r-cif">—</span></div>
     <div class="result-row"><span class="result-label">Import Duty (25%)</span><span class="result-value positive" id="r-duty">—</span></div>
     <div class="result-row"><span class="result-label">VAT (18% of CIF + Duty)</span><span class="result-value positive" id="r-vat">—</span></div>
@@ -90,11 +171,11 @@
         <div class="total-item"><label>Total Landed Cost</label><div class="amount big" id="t-total">—</div></div>
       </div>
     </div>
-    <div class="ura-override-notice" id="uraOverrideNotice">ℹ️ Using URA's official CIF valuation for tax calculations as per URA database.</div>
+    <div class="ura-override-notice reveal-left" id="uraOverrideNotice">ℹ️ Using URA's official CIF valuation for tax calculations as per URA database.</div>
     <div class="info-row" id="info-pills"></div>
-    <div class="warning-box">⚠️ These are <strong>estimates only</strong>. Always verify with a licensed clearing agent or URA directly before purchasing.</div>
+    <div class="warning-box reveal-right">⚠️ These are <strong>estimates only</strong>. Always verify with a licensed clearing agent or URA directly before purchasing.</div>
 
-    <button id="methBtn" onclick="toggleMethodology()" style="width:100%;margin-top:16px;background:transparent;border:1px solid var(--border);border-radius:12px;padding:14px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all 0.2s" onmouseenter="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseleave="if(!document.getElementById('methodologyPanel').classList.contains('open')){this.style.borderColor='var(--border)';this.style.color='var(--muted)'}">
+    <button class="reveal-scale" id="methBtn" onclick="toggleMethodology()" style="width:100%;margin-top:16px;background:transparent;border:1px solid var(--border);border-radius:12px;padding:14px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all 0.2s" onmouseenter="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseleave="if(!document.getElementById('methodologyPanel').classList.contains('open')){this.style.borderColor='var(--border)';this.style.color='var(--muted)'}">
       <span>📐 View Methodology & Tax Breakdown</span>
       <span id="methArrow" style="font-size:16px;transition:transform 0.25s">▾</span>
     </button>
@@ -131,18 +212,18 @@
        Shows Uganda-specific reliability data
   ============================================== -->
   <div style="margin-top:40px">
-    <div class="card" style="animation-delay:0.2s">
-      <div class="card-title">🔧 Vehicle Reliability Check</div>
-      <p style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);margin-bottom:20px">Uganda-specific reliability ratings — based on parts availability, local mechanic knowledge and road conditions</p>
+    <div class="card">
+      <h2 class="card-title reveal">🔧 Vehicle Reliability Check</h2>
+      <p class="reveal-scale" style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);margin-bottom:20px">Uganda-specific reliability ratings — based on parts availability, local mechanic knowledge and road conditions</p>
 
       <!-- Search -->
-      <div class="field">
+      <div class="field reveal-left">
         <label>Search by Brand</label>
         <input type="text" id="reliSearch" placeholder="e.g. Toyota, BMW, Honda..." oninput="filterReliability()" style="margin-bottom:12px">
       </div>
 
       <!-- Filter buttons -->
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px" id="filterBtns">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px" id="filterBtns" class="reveal-right">
         <button onclick="setFilter('all')" class="filter-btn active" data-filter="all">All Brands</button>
         <button onclick="setFilter('Excellent')" class="filter-btn" data-filter="Excellent">💎 Excellent</button>
         <button onclick="setFilter('Good')" class="filter-btn" data-filter="Good">🛡️ Good</button>
@@ -151,9 +232,9 @@
         <button onclick="setFilter('Avoid')" class="filter-btn" data-filter="Avoid">🔩 Expert Care</button>
       </div>
 
-      <p style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px">Uganda-specific ratings · tap any row for details · click 🔩 engines for engine breakdown</p>
+      <p class="reveal" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:14px">Uganda-specific ratings · tap any row for details · click 🔩 engines for engine breakdown</p>
       <!-- Grid -->
-      <div id="reliTable"></div>
+      <div id="reliTable" class="reveal"></div>
     </div>
   </div>
 

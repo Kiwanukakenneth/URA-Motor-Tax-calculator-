@@ -1,7 +1,42 @@
   /* =========================================
+     LOCAL FONTS (Performance & Privacy)
+     ========================================= */
+  @font-face {
+    font-family: 'Syne';
+    src: url('../fonts/Syne/Syne-VariableFont_wght.ttf') format('truetype');
+    font-weight: 400 800;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'DM Mono';
+    src: url('../fonts/DM_Mono/DMMono-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'DM Mono';
+    src: url('../fonts/DM_Mono/DMMono-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-display: swap;
+  }
+
+  /* =========================================
      CSS VARIABLES (THEME & COLORS)
      ========================================= */
-  :root{--bg:#0a0c0f;--surface:#111417;--surface2:#181c21;--border:#22282f;--accent:#c8ff00;--accent2:#00d4ff;--text:#f0f2f5;--muted:#6b7280;--danger:#ff4444;--warning:#ffaa00}
+  :root{
+    --bg:#0a0c0f;
+    --surface:#111417;
+    --surface2:#181c21;
+    --border:#22282f;
+    --accent:#c8ff00;
+    --accent2:#00d4ff;
+    --text:#f0f2f5;
+    --muted:#6b7280;
+    --danger:#ff4444;
+    --warning:#ffaa00;
+  }
   
   /* =========================================
      GLOBAL RESET & BODY STYLES
@@ -165,4 +200,115 @@
   #ccField label { color: #c8ff00; }
   #cc { border-color: rgba(200,255,0,0.4); }
   #cc:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,255,0,0.1); }
+
+  /* =========================================
+     QUICK SEARCH (GLASSMORPHISM)
+     ========================================= */
+  .quick-search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(17, 20, 23, 0.85); /* Dark base matching theme */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin-top: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    z-index: 100;
+  }
+  
+  .quick-search-results::-webkit-scrollbar {
+    width: 6px;
+  }
+  .quick-search-results::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .quick-search-results::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+  }
+  .quick-search-results::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .quick-search-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: all 0.2s ease;
+  }
+  
+  .quick-search-item:last-child {
+    border-bottom: none;
+  }
+
+  .quick-search-item:hover {
+    background: rgba(0, 212, 255, 0.1);
+    padding-left: 20px; /* Slight indent animation on hover */
+  }
+
+  .quick-search-item-title {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .quick-search-item-details {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* =========================================
+     SCROLL REVEAL ANIMATIONS (INTERSECTION OBSERVER)
+     ========================================= */
+  .reveal, .reveal-left, .reveal-right, .reveal-scale {
+    opacity: 0;
+    filter: blur(12px);
+    will-change: opacity, transform, filter;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .reveal { transform: translateY(40px); }
+  .reveal-left { transform: translateX(-50px); }
+  .reveal-right { transform: translateX(50px); }
+  .reveal-scale { transform: scale(0.9) translateY(20px); }
+  
+  .reveal.visible, .reveal-left.visible, .reveal-right.visible, .reveal-scale.visible {
+    opacity: 1;
+    transform: translate(0) scale(1);
+    filter: blur(0);
+  }
+
+  /* Staggered Row Cells within a revealed container */
+  .row-cell {
+    opacity: 0;
+    transform: translateY(15px);
+    will-change: transform, opacity;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+                background 0.2s ease, padding-left 0.2s ease;
+  }
+  .row-cell.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Row Hover Effect via data-brand parent */
+  [data-brand]:hover .row-cell {
+    background: rgba(200, 255, 0, 0.04) !important;
+  }
+  [data-brand]:hover .row-cell:first-child {
+    padding-left: 20px !important; /* Slight indent on hover for the first cell */
+  }
 
