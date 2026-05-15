@@ -11,7 +11,7 @@ makes.forEach(m => { const o=document.createElement('option'); o.value=m; o.text
 
 let currentUraCif = null;
 
-const UGX = 3750;
+const UGX = 3770;
 function fmt(n){ return '$'+Math.round(n).toLocaleString('en-US'); }
 function fmtU(n){ return 'UGX '+(Math.round(n*UGX)).toLocaleString('en-US'); }
 
@@ -377,32 +377,43 @@ function renderReliability(data) {
     tbl.innerHTML = '<p style="color:var(--muted);font-family:\'DM Mono\',monospace;font-size:13px;padding:12px 0">No brands found</p>';
     return;
   }
-  const cols = 'grid-template-columns:140px 95px 1fr 85px 110px 28px';
-  const hdr = ['BRAND','VERDICT','SCORE','COST','PARTS / ENGINES',''].map(h=>`<div style="padding:8px 12px;background:var(--surface2);font-size:10px;font-family:\'DM Mono\',monospace;color:var(--muted);letter-spacing:1.5px;font-weight:600;border-bottom:1px solid var(--border)">${h}</div>`).join('');
+  const hdr = ['BRAND','VERDICT','SCORE','COST','PARTS / ENGINES',''].map((h,idx)=>{
+    const hideClass = (idx === 3 || idx === 4) ? ' hide-mobile' : '';
+    return `<div class="hdr-cell${hideClass}" style="padding:8px 12px;background:var(--surface2);font-size:10px;font-family:\'DM Mono\',monospace;color:var(--muted);letter-spacing:1.5px;font-weight:600;border-bottom:1px solid var(--border)">${h}</div>`;
+  }).join('');
+  
   const rows = entries.map(([brand,d],i)=>{
     const dots='●'.repeat(d.score)+'○'.repeat(10-d.score);
     const bg=i%2===0?'transparent':'rgba(255,255,255,0.015)';
     const issues=d.issues.map(x=>`<span style="display:block;padding:1px 0">• ${x}</span>`).join('');
     const hasEng=ENGINES[brand];
     const rowClick=`onclick="toggleRow('r${i}')"`;
-    const cell=(content,extra='',click=rowClick)=>`<div ${click} class="row-cell" style="padding:9px 12px;background:${bg};border-top:1px solid var(--border);cursor:pointer;display:flex;align-items:center;${extra}">${content}</div>`;
+    const cell=(content,extra='',click=rowClick, cls='')=>`<div ${click} class="row-cell ${cls}" style="padding:9px 12px;background:${bg};border-top:1px solid var(--border);cursor:pointer;display:flex;align-items:center;${extra}">${content}</div>`;
+    
     return `
       <div data-brand="${brand}" style="display:contents">
       ${cell(`<span style="font-size:13px;font-weight:700">${brand}</span>`)}
       ${cell(`<span style="background:${d.color}18;border:1px solid ${d.color}44;border-radius:100px;padding:2px 9px;font-size:10px;color:${d.color};font-family:\'DM Mono\',monospace;font-weight:600;white-space:nowrap">${getV(d.verdict)}</span>`)}
       ${cell(`<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:${d.color};letter-spacing:0.5px" title="${d.score}/10">${dots}</span>`)}
-      ${cell(`<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--muted)">${d.cost}</span>`)}
+      ${cell(`<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--muted)">${d.cost}</span>`,'','','hide-mobile')}
       ${cell(
         hasEng
           ? `<button class="eng-btn" onclick="event.stopPropagation();showEngines('${brand}',this)" style="background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.3);border-radius:6px;color:#c8ff00;font-family:\'DM Mono\',monospace;font-size:10px;padding:4px 9px;cursor:pointer;white-space:nowrap;transition:all 0.15s">🔩 engines</button>`
           : `<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--muted)">${d.parts}</span>`,
-        '',rowClick
+        '',rowClick,'hide-mobile'
       )}
       ${cell(`<span style="color:var(--muted);font-size:14px">▾</span>`,'justify-content:center')}
       </div>
-      <div id="r${i}" style="display:none;grid-column:1/-1;background:rgba(200,255,0,0.02);border-top:1px solid var(--border);padding:10px 14px;font-family:\'DM Mono\',monospace;font-size:12px;color:var(--muted);line-height:1.9">${issues}</div>`;
+      <div id="r${i}" style="display:none;grid-column:1/-1;background:rgba(200,255,0,0.02);border-top:1px solid var(--border);padding:10px 14px;font-family:\'DM Mono\',monospace;font-size:12px;color:var(--muted);line-height:1.9">
+        <div class="mobile-extra-info" style="display:none; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 8px;">
+           <span style="color:var(--muted)">Cost:</span> <span style="color:var(--text)">${d.cost}</span> &nbsp;&nbsp; 
+           <span style="color:var(--muted)">Parts:</span> <span style="color:var(--text)">${d.parts}</span>
+           ${hasEng ? `<br><button class="eng-btn" onclick="event.stopPropagation();showEngines('${brand}',this)" style="margin-top:8px;background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.3);border-radius:6px;color:#c8ff00;font-family:\'DM Mono\',monospace;font-size:10px;padding:4px 9px;cursor:pointer;transition:all 0.15s">🔩 engines</button>` : ''}
+        </div>
+        ${issues}
+      </div>`;
   }).join('');
-  tbl.innerHTML=`<div style="overflow-x:auto;padding-bottom:8px;margin-bottom:-8px"><div style="display:grid;min-width:580px;${cols};border:1px solid var(--border);border-radius:10px;overflow:hidden"><div style="display:contents">${hdr}</div><div style="display:contents">${rows}</div></div></div>`;
+  tbl.innerHTML=`<div style="overflow-x:auto;padding-bottom:8px;margin-bottom:-8px"><div class="reli-grid"><div style="display:contents">${hdr}</div><div style="display:contents">${rows}</div></div></div>`;
 
   // Apply scroll-trigger observer to rows
   if ('IntersectionObserver' in window) {
@@ -490,8 +501,10 @@ function showEngines(brand, btnEl) {
         </div>`;
       }).join('')}
     </div>`;
-  const row=btnEl.closest('[data-brand]');
-  if(row) row.parentElement.insertBefore(panel, row.nextSibling);
+  const row=document.querySelector(`[data-brand="${brand}"]`);
+  if(row && row.nextElementSibling) {
+    row.parentElement.insertBefore(panel, row.nextElementSibling.nextSibling);
+  }
 }
 
 function closeEngines() {

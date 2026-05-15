@@ -312,3 +312,27 @@
     padding-left: 20px !important; /* Slight indent on hover for the first cell */
   }
 
+  /* =========================================
+     RELIABILITY TABLE RESPONSIVE GRID
+     ========================================= */
+  .reli-grid {
+    display: grid;
+    grid-template-columns: 140px 95px 1fr 85px 110px 28px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 580px;
+  }
+
+  @media (max-width: 640px) {
+    .reli-grid {
+      grid-template-columns: 1.1fr 90px 85px 28px;
+      min-width: 100%;
+    }
+    .hide-mobile {
+      display: none !important;
+    }
+    .mobile-extra-info {
+      display: block !important;
+    }
+  }
