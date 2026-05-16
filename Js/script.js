@@ -378,7 +378,7 @@ function renderReliability(data) {
     return;
   }
   const hdr = ['BRAND','VERDICT','SCORE','COST','PARTS / ENGINES',''].map((h,idx)=>{
-    const hideClass = (idx === 3 || idx === 4) ? ' hide-mobile' : '';
+    const hideClass = (idx === 2 || idx === 3 || idx === 4) ? ' hide-mobile' : '';
     return `<div class="hdr-cell${hideClass}" style="padding:8px 12px;background:var(--surface2);font-size:10px;font-family:\'DM Mono\',monospace;color:var(--muted);letter-spacing:1.5px;font-weight:600;border-bottom:1px solid var(--border)">${h}</div>`;
   }).join('');
   
@@ -394,7 +394,7 @@ function renderReliability(data) {
       <div data-brand="${brand}" style="display:contents">
       ${cell(`<span style="font-size:13px;font-weight:700">${brand}</span>`)}
       ${cell(`<span style="background:${d.color}18;border:1px solid ${d.color}44;border-radius:100px;padding:2px 9px;font-size:10px;color:${d.color};font-family:\'DM Mono\',monospace;font-weight:600;white-space:nowrap">${getV(d.verdict)}</span>`)}
-      ${cell(`<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:${d.color};letter-spacing:0.5px" title="${d.score}/10">${dots}</span>`)}
+      ${cell(`<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:${d.color};letter-spacing:0.5px" title="${d.score}/10">${dots}</span>`,'','','hide-mobile')}
       ${cell(`<span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--muted)">${d.cost}</span>`,'','','hide-mobile')}
       ${cell(
         hasEng
@@ -406,6 +406,7 @@ function renderReliability(data) {
       </div>
       <div id="r${i}" style="display:none;grid-column:1/-1;background:rgba(200,255,0,0.02);border-top:1px solid var(--border);padding:10px 14px;font-family:\'DM Mono\',monospace;font-size:12px;color:var(--muted);line-height:1.9">
         <div class="mobile-extra-info" style="display:none; margin-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 8px;">
+           <span style="color:var(--muted)">Score:</span> <span style="font-family:\'DM Mono\',monospace;color:${d.color};font-weight:600">${d.score}/10</span> &nbsp;&nbsp; 
            <span style="color:var(--muted)">Cost:</span> <span style="color:var(--text)">${d.cost}</span> &nbsp;&nbsp; 
            <span style="color:var(--muted)">Parts:</span> <span style="color:var(--text)">${d.parts}</span>
            ${hasEng ? `<br><button class="eng-btn" onclick="event.stopPropagation();showEngines('${brand}',this)" style="margin-top:8px;background:rgba(200,255,0,0.08);border:1px solid rgba(200,255,0,0.3);border-radius:6px;color:#c8ff00;font-family:\'DM Mono\',monospace;font-size:10px;padding:4px 9px;cursor:pointer;transition:all 0.15s">🔩 engines</button>` : ''}
