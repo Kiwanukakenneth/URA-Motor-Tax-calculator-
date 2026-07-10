@@ -100,13 +100,10 @@
      FLOATING NAVBAR
      ========================================= */
   .floating-nav {
-    position: fixed;
-    top: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    width: calc(100% - 40px);
-    max-width: 900px;
+    display: flex;
+    justify-content: center;
+    padding: 20px 20px 0;
+    width: 100%;
   }
 
   .nav-inner {
@@ -119,7 +116,7 @@
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: 100px;
-    padding: 8px 24px;
+    padding: 10px 32px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.10);
     transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
   }
@@ -145,7 +142,8 @@
   .nav-flag { font-size: 18px; }
 
   .nav-brand-text {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    display: inline-block;
+    background: linear-gradient(135deg, #c8ff00 0%, #00d4ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -186,8 +184,6 @@
   }
 
   @media (max-width: 540px) {
-    .floating-nav { top: 10px; width: calc(100% - 20px); }
-    .nav-brand-text { display: none; }
     .nav-link { padding: 7px 10px; font-size: 11px; }
   }
 
@@ -331,7 +327,7 @@
   /* =========================================
      LAYOUT & CONTAINERS
      ========================================= */
-  .container{max-width:900px;margin:0 auto;padding:100px 20px 40px;position:relative;z-index:1}
+  .container{max-width:900px;margin:0 auto;padding:20px 20px 40px;position:relative;z-index:1}
   .header{text-align:center;margin-bottom:48px;animation:fadeDown .6s ease}
   .header-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
   
@@ -453,7 +449,7 @@
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border);
     border-radius: 100px;
-    padding: 8px 18px;
+    padding: 7px 13px;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     font-weight: 500;
@@ -464,7 +460,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     white-space: nowrap;
     margin-bottom: 4px;
   }

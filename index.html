@@ -42,44 +42,36 @@
   }
 }
 </script>
-<!-- JSON-LD Structured Data FAQ -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [{
-    "@type": "Question",
-    "name": "How is import duty calculated on cars in Uganda?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "Import duty is calculated at 25% of the vehicle's CIF (Cost, Insurance, and Freight) value as per the East African Community Common External Tariff (EAC-CET)."
-    }
-  }, {
-    "@type": "Question",
-    "name": "What is the environmental levy on imported cars in Uganda?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "Vehicles aged 0-9 years have 0% environmental levy. Vehicles aged 10-14 years are charged an environmental levy of 50% of their CIF value."
-    }
-  }, {
-    "@type": "Question",
-    "name": "How does URA determine the CIF value?",
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": "URA uses its official Motor Vehicle Value Guide database to determine the CIF value. If your purchase price is lower than URA's guided value, taxes are levied based on URA's higher valuation."
-    }
-  }]
+<script>
+function smoothScrollTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const navH = document.getElementById('floatingNav')?.offsetHeight || 70;
+  const y = el.getBoundingClientRect().top + window.scrollY - navH - 16;
+  window.scrollTo({ top: y, behavior: 'smooth' });
 }
 </script>
 </head>
 <body>
+
+<!-- ================================================
+     FLOATING NAVBAR
+================================================ -->
+<nav class="floating-nav" id="floatingNav">
+  <div class="nav-inner">
+    <a href="#" class="nav-brand">
+      <span class="nav-flag">🇺🇬</span>
+      <span class="nav-brand-text">UGMOTORTAX</span>
+    </a>
+  </div>
+</nav>
+
 <div class="container">
   <!-- ==============================================
        HEADER SECTION
        Displays the title, subtitle, and database stats
   ============================================== -->
   <div class="header">
-    <div class="flag-badge"><span class="flag">🇺🇬</span>UGMOTORTAX</div>
     <h1>Uganda Revenue Authority Car Import<br><span>Tax Calculator</span></h1>
     <p class="subtitle">Instantly compute URA CIF, import duty, and environmental levies</p>
     <div class="db-stats" id="dbStats"></div>
@@ -224,8 +216,8 @@
 
       <!-- Filter buttons -->
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px" id="filterBtns" class="reveal-right">
-        <button onclick="setFilter('all')" class="filter-btn active" data-filter="all">All Brands</button>
-        <button onclick="setFilter('Excellent')" class="filter-btn" data-filter="Excellent">💎 Excellent</button>
+        <button onclick="setFilter('all')" class="filter-btn" data-filter="all">All Brands</button>
+        <button onclick="setFilter('Excellent')" class="filter-btn active" data-filter="Excellent">💎 Excellent</button>
         <button onclick="setFilter('Good')" class="filter-btn" data-filter="Good">🛡️ Good</button>
         <button onclick="setFilter('Average')" class="filter-btn" data-filter="Average">⚖️ Balanced</button>
         <button onclick="setFilter('Caution')" class="filter-btn" data-filter="Caution">🛠️ Needs Care</button>
