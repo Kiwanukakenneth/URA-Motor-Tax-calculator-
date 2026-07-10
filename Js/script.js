@@ -332,10 +332,7 @@ function calculate(){
   }else{
     document.getElementById('age-levy-row').style.display='none';
   }
-  document.getElementById('r-form').textContent=fmtU(formFees);
-  document.getElementById('r-stamp').textContent=fmtU(stampDuty);
-  document.getElementById('r-excise').textContent=fmtU(exciseDuty);
-  document.getElementById('r-reg').textContent=fmtU(regFees);
+  document.getElementById('r-fixed').textContent=fmtU(fixedFees);
   document.getElementById('r-agent').textContent=fmtU(agentFee);
   document.getElementById('t-car').textContent=fmt(carPrice);
   document.getElementById('t-tax').textContent=fmtU(totalTaxes);
