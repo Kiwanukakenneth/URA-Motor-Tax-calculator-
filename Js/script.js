@@ -11,7 +11,7 @@ makes.forEach(m => { const o=document.createElement('option'); o.value=m; o.text
 
 let currentUraCif = null;
 
-const UGX = 3770;
+const UGX = 3800;
 function fmt(n){ return '$'+Math.round(n).toLocaleString('en-US'); }
 function fmtU(n){ return 'UGX '+(Math.round(n*UGX)).toLocaleString('en-US'); }
 
@@ -313,7 +313,7 @@ function calculate(){
   const envLevy=cif*envLevyRate;
   // Fixed UGX government fees
   const formFees=18000/UGX;
-  const stampDuty=35000/UGX;
+  const stampDuty=200000/UGX;
   const exciseDuty=200000/UGX;
   const regFees=1500000/UGX;
   const fixedFees=formFees+stampDuty+exciseDuty+regFees;
@@ -326,9 +326,17 @@ function calculate(){
   document.getElementById('r-wht').textContent=fmtU(wht);
   document.getElementById('r-infra').textContent=fmtU(infra);
   document.getElementById('r-age').textContent=fmtU(envLevy);
-  document.getElementById('r-fixed').textContent=fmtU(fixedFees);
+
+  if(age>9){
+    document.getElementById('age-levy-row').style.display='flex';
+  }else{
+    document.getElementById('age-levy-row').style.display='none';
+  }
+  document.getElementById('r-form').textContent=fmtU(formFees);
+  document.getElementById('r-stamp').textContent=fmtU(stampDuty);
+  document.getElementById('r-excise').textContent=fmtU(exciseDuty);
+  document.getElementById('r-reg').textContent=fmtU(regFees);
   document.getElementById('r-agent').textContent=fmtU(agentFee);
-  document.getElementById('age-levy-row').style.display=age>9?'flex':'none';
   document.getElementById('t-car').textContent=fmt(carPrice);
   document.getElementById('t-tax').textContent=fmtU(totalTaxes);
   document.getElementById('t-total').textContent=fmtU(totalLanded);
@@ -360,7 +368,7 @@ function calculate(){
 
 // ── Reliability Section ──────────────────────────────
 let lastCalcData = null;
-let activeFilter = 'all';
+let activeFilter = 'Excellent';
 let openEnginePanel = null;
 
 const RELI = {"Acura":{"score":8,"cost":"Medium","parts":"Medium","verdict":"Good","color":"#c8ff00","issues":["Timing chain maintenance on V6 models","AC compressor check recommended","Well-regarded Honda-based platform"]},"Alfa Romeo":{"score":5,"cost":"High","parts":"Requires Planning","verdict":"Caution","color":"#ffaa00","issues":["Electrical systems benefit from professional check","Parts availability can be limited in East Africa","Requires attentive specialized maintenance"]},"Audi":{"score":6,"cost":"High","parts":"Medium","verdict":"Caution","color":"#ffaa00","issues":["DSG transmission maintenance recommended","Direct injection engines benefit from periodic cleaning","Premium engineering requires consistent care"]},"BMW":{"score":7,"cost":"High","parts":"Good","verdict":"Good","color":"#c8ff00","issues":["N47 diesel timing chain maintenance advised","Cooling system checks recommended","Good parts availability in Kampala"]},"Bentley":{"score":7,"cost":"Premium","parts":"International Sourcing","verdict":"Avoid","color":"#ff4444","issues":["Professional maintenance commitment","Parts sourcing requires international planning","Premium vehicle suited for specialized roads"]},"Chevrolet":{"score":6,"cost":"Medium","parts":"Medium","verdict":"Average","color":"#ffaa00","issues":["Transmission check recommended for some models","Protect against rust in humid climates","Solid reliability with consistent care"]},"Chrysler":{"score":5,"cost":"Medium","parts":"Requires Planning","verdict":"Caution","color":"#ffaa00","issues":["Electrical checks recommended","Parts sourcing requires planning in Uganda","Requires consistent maintenance attention"]},"Dodge":{"score":5,"cost":"Medium","parts":"Requires Planning","verdict":"Caution","color":"#ffaa00","issues":["Transmission health checks recommended","Parts availability varies locally","Higher fuel consumption profiles"]},"Ferrari":{"score":7,"cost":"Luxury Exclusive","parts":"International Sourcing","verdict":"Avoid","color":"#ff4444","issues":["Requires specialized road conditions","Requires international service expertise","Exclusive maintenance profile"]},"Fiat":{"score":5,"cost":"Medium","parts":"Requires Planning","verdict":"Caution","color":"#ffaa00","issues":["Electrical checks recommended","Protect against rust in wet conditions","Parts sourcing requires planning"]},"Ford":{"score":7,"cost":"Medium","parts":"Good","verdict":"Good","color":"#c8ff00","issues":["Ranger and Explorer remain popular choices","EcoBoost engines benefit from diligent maintenance","Solid parts availability in Uganda"]},"Honda":{"score":9,"cost":"Low","parts":"Excellent","verdict":"Excellent","color":"#00d4ff","issues":["Excellent overall reliability","Fit and CRV well-suited for Uganda roads","Best-in-class parts availability"]},"Hyundai":{"score":7,"cost":"Low","parts":"Good","verdict":"Good","color":"#c8ff00","issues":["Reliability improving in recent years","Santa Fe and Tucson are well-regarded","Growing parts availability in Uganda"]},"Infiniti":{"score":7,"cost":"Medium","parts":"Medium","verdict":"Average","color":"#ffaa00","issues":["Nissan-based architecture assists with parts","CVT transmission care recommended","Less common brand requires specialized knowledge"]},"Isuzu":{"score":9,"cost":"Low","parts":"Excellent","verdict":"Excellent","color":"#00d4ff","issues":["D-Max maintains legendary durability","Diesel engines perform well with care","Strong resale value in Uganda market"]},"Jaguar":{"score":5,"cost":"Premium","parts":"Requires Planning","verdict":"Caution","color":"#ffaa00","issues":["Electrical system checks recommended","Requires specialized part sourcing","Best suited for well-paved surfaces"]},"Jeep":{"score":6,"cost":"High","parts":"Medium","verdict":"Average","color":"#ffaa00","issues":["Wrangler performance is strong off-road","Transmission maintenance recommended","Parts becoming more available locally"]},"Kia":{"score":7,"cost":"Low","parts":"Good","verdict":"Good","color":"#c8ff00","issues":["Reliable and efficient operation","Sorento and Sportage are popular choices","Steady improvement in parts availability"]},"Lamborghini":{"score":7,"cost":"Luxury Exclusive","parts":"International Sourcing","verdict":"Avoid","color":"#ff4444","issues":["Requires highly specialized road conditions","Requires professional international service","Unique maintenance support required"]},"Land Rover":{"score":5,"cost":"Premium","parts":"Medium","verdict":"Caution","color":"#ffaa00","issues":["Electrical system checks recommended","Air suspension maintenance should be planned","Requires consistent specialized care"]},"Lexus":{"score":9,"cost":"Medium","parts":"Good","verdict":"Excellent","color":"#00d4ff","issues":["Excellent Toyota-based reliability","LX570 and GX460 well-suited for Uganda","Strong local market resale value"]},"Lincoln":{"score":6,"cost":"High","parts":"Requires Planning","verdict":"Caution","color":"#ffaa00","issues":["Parts availability requires planning","Air suspension maintenance recommended","Optimal for well-maintained infrastructure"]},"Maserati":{"score":5,"cost":"Luxury Exclusive","parts":"International Sourcing","verdict":"Avoid","color":"#ff4444","issues":["Sophisticated maintenance history","Requires specialized service infrastructure","High maintenance commitment"]},"Mazda":{"score":8,"cost":"Low","parts":"Good","verdict":"Good","color":"#c8ff00","issues":["Skyactiv engines offer good efficiency","CX-5 maintains excellent reliability","Increasing parts availability in Uganda"]},"Mercedes":{"score":7,"cost":"High","parts":"Good","verdict":"Good","color":"#c8ff00","issues":["Older models reward consistent care","Airmatic suspension maintenance recommended","Good support available in Kampala"]},"Mitsubishi":{"score":8,"cost":"Low","parts":"Excellent","verdict":"Excellent","color":"#00d4ff","issues":["Pajero offers excellent durability","L200 pickup is a robust workhorse","Excellent parts availability locally"]},"Nissan":{"score":8,"cost":"Low","parts":"Excellent","verdict":"Excellent","color":"#00d4ff","issues":["CVT maintenance recommended for some","Navara and Patrol are highly regarded","Strong parts dealer network in East Africa"]},"Peugeot":{"score":6,"cost":"Medium","parts":"Medium","verdict":"Average","color":"#ffaa00","issues":["Electrical checks recommended","Parts availability improving in Uganda","HDi diesel engines are reliable with care"]},"Porsche":{"score":8,"cost":"Premium","parts":"Requires Planning","verdict":"Caution","color":"#ffaa00","issues":["Cayenne benefits from diligent maintenance","Performance focused engineering requires specialized care","Parts require professional importing"]},"Rolls Royce":{"score":7,"cost":"Luxury Exclusive","parts":"International Sourcing","verdict":"Avoid","color":"#ff4444","issues":["Requires specialized care outside local norms","Requires purpose-built road conditions","Exclusive maintenance commitment"]},"Subaru":{"score":7,"cost":"Medium","parts":"Medium","verdict":"Good","color":"#c8ff00","issues":["Periodic head gasket checks recommended","Forester and Outback are popular locally","AWD well-suited for varied terrain"]},"Suzuki":{"score":8,"cost":"Low","parts":"Good","verdict":"Good","color":"#c8ff00","issues":["Excellent fuel efficiency","Jimny offers good utility","Good parts availability locally"]},"Toyota":{"score":10,"cost":"Low","parts":"Excellent","verdict":"Excellent","color":"#00d4ff","issues":["Consistent reliability benchmark","Hilux, Prado, Land Cruiser remain favorites","Best-in-class support, parts, and mechanics"]},"Volkswagen":{"score":7,"cost":"Medium","parts":"Medium","verdict":"Good","color":"#c8ff00","issues":["DSG transmission care recommended","Golf TDI offers excellent efficiency","Parts availability steadily improving"]},"Volvo":{"score":7,"cost":"High","parts":"Requires Planning","verdict":"Average","color":"#ffaa00","issues":["XC90 requires consistent maintenance","Parts sourcing requires planning","Best suited for well-maintained roads"]}};
@@ -468,7 +476,7 @@ function setFilterFromSelect() {
   filterReliability();
 }
 
-renderReliability(RELI);
+filterReliability();
 
 // ── Engine Panel ──────────────────────────────────────
 function showEngines(brand, btnEl) {
@@ -551,7 +559,7 @@ function buildMethodology(d) {
     {num:'04',color:'#ffaa00',title:'Withholding Tax — 6%',formula:'WHT = CIF × 6%',calc:`WHT = ${fmt(c)} × 0.06 = ${fmt(wht)}`,note:'Prepayment of income tax collected at customs. Applied on CIF value only. Private importers may offset this against their annual income tax return with URA.'},
     {num:'05',color:'#ffaa00',title:'Infrastructure Levy — 1.5%',formula:'Infrastructure Levy = CIF × 1.5%',calc:`Infrastructure Levy = ${fmt(c)} × 0.015 = ${fmt(infra)}`,note:'Road infrastructure development fund. Applied on CIF value only. Paid at customs alongside import duty.'},
     ...(hasEnv?[{num:'06',color:'#ff4444',title:`Environmental Levy — 50% (Vehicle is ${d.age} years old)`,formula:'Environmental Levy = CIF × 50%  [vehicles aged 10–14 years]',calc:`Environmental Levy = ${fmt(c)} × 0.50 = ${fmt(env)}`,note:`⚠️ Your vehicle is ${d.age} years old. The environmental levy applies to all vehicles aged 10–14 years at 50% of CIF. Vehicles under 10 years pay 0%. Vehicles over 15 years cannot be imported. Collected at vehicle registration, not at customs.`}]:[{num:'06',color:'#00d4ff',title:`Environmental Levy — 0% (Vehicle is ${d.age} years old)`,formula:'Environmental Levy = 0%  [vehicles under 10 years]',calc:`No environmental levy — vehicle is only ${d.age} years old ✅`,note:`The environmental levy only applies to vehicles aged 10 years and older. Your vehicle is in the zero-levy band.`}]),
-    {num:'07',color:'#6b7280',title:'Fixed Government Fees (UGX)',formula:'Form Fees + Stamp Duty + Excise Duty + Registration Fees',calc:`UGX 18,000 + UGX 35,000 + UGX 200,000 + UGX 1,500,000 = UGX 1,753,000 ≈ ${fmt(d.fixedFees)}`,note:'Fixed UGX fees regardless of vehicle value. Form Fees and Stamp Duty are documentation charges paid at customs. Excise Duty and Registration Fees are paid at DVLA when registering in Uganda.'},
+    {num:'07',color:'#6b7280',title:'Fixed Government Fees (UGX)',formula:'Form Fees + Stamp Duty + Excise Duty + Registration Fees',calc:`UGX 18,000 + UGX 200,000 + UGX 200,000 + UGX 1,500,000 = UGX 1,918,000 ≈ ${fmt(d.fixedFees)}`,note:'Fixed UGX fees regardless of vehicle value. Form Fees and Stamp Duty are documentation charges paid at customs. Excise Duty and Registration Fees are paid at DVLA when registering in Uganda.'},
     {num:'08',color:'#6b7280',title:'Clearing Agent Fee',formula:'Agent Fee = your negotiated amount (not a URA tax)',calc:`Agent Fee = ${fmt(agent)}`,note:'Paid to your licensed clearing agent for customs documentation, URA liaison, port handling and inland transport. Not a government charge — varies by agent and port.'},
   ];
   document.getElementById('methSteps').innerHTML=steps.map(s=>`
